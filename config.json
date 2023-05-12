@@ -1,0 +1,27 @@
+{
+"Year":
+	{
+	"2020":
+		{
+		"All_downloaded":false,
+		"Months":
+			{
+				"01":false,
+				"02":false,
+				"03":false,
+				"04":false
+			}
+		},
+	"2021":
+		{
+		"All_downloaded":false,
+		"Months":
+			{
+				"07":false,
+				"08":false,
+				"09":false,
+				"10":false
+			}
+		}
+	}
+}

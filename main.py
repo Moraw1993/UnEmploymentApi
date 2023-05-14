@@ -4,6 +4,7 @@ import json
 import time
 import logging
 from ETL.extract import Api
+from ETL.transform import Transform
 from dotenv import load_dotenv
 
 
@@ -14,7 +15,7 @@ class UnemploymentDownloader:
         self.month = month
         self.stopy_bezrobocia = {}
         self.api = Api()
-        self.tranform = None  ## ToDo
+        self.transform = Transform()  ## ToDo
         self.saver = None  ## ToDo
 
     def extract_data(self):
@@ -44,9 +45,10 @@ class UnemploymentDownloader:
                         "The program is stopped."
                     )
                     break
-                self.stopy_bezrobocia[year][month] = data  ## temporary
-                # clear_data = self.transform.transform_data(data)
-                # self.stopy_bezrobocia[year][month] = clear_data
+                # self.stopy_bezrobocia[year][month] = data  ## temporary
+                clear_data = self.transform.transform_data(data)
+                self.stopy_bezrobocia[year][month] = clear_data
+                print(clear_data)
                 # self.saver.save_data(clear_data, month, year)
 
         ##print(self.stopy_bezrobocia)
@@ -85,11 +87,12 @@ class MyFormatter(logging.Formatter):
 
 
 def initialize_logger():
+    starttime = time.strftime("%Y%m%d_%H%M%S", time.localtime())
     logger = logging.getLogger(__name__)
 
     fmt = MyFormatter()
 
-    hdlr = logging.FileHandler("Logs/app.log", mode="w")
+    hdlr = logging.FileHandler(f"Logs/{starttime}.log", mode="w")
     hdlr.setLevel(logging.INFO)
     hdlr.setFormatter(fmt)
 

@@ -8,11 +8,6 @@ import logging
 import os
 import requests
 import time
-from dotenv import load_dotenv
-
-
-load_dotenv()
-logging.basicConfig()
 
 
 class Api:
@@ -32,6 +27,7 @@ class Api:
             "11": "461690",
             "12": "461691",
         }
+        self.logger = logging.getLogger("__main__")
 
     def get_variable_id(self, month):
         month_str = str(month)
@@ -41,13 +37,19 @@ class Api:
 
     def fetch_data(self, variable_id: str, year: str):
         stopa = []
-        url = f"https://bdl.stat.gov.pl/api/v1/data/by-Variable/{variable_id}?year={year}format=json&page-size=100"
+
+        url = f"https://bdl.stat.gov.pl/api/v1/data/by-Variable/{variable_id}?year={year}&format=json&page-size=100"
         header = self.ApiHelper.getHeader()
         while url:
             starttime = time.time()
-
             ## get data
-            response = requests.get(url=url, headers=header)
+            try:
+                ## log
+                self.logger.info(f"Start trying download data from the URL: {url}")
+                response = requests.get(url=url, headers=header)
+            except Exception as e:
+                self.logger.exception(f"problem with the: {str(type(e).__name__)}\n")
+                raise
             if self.ApiHelper.validate_response(response):
                 json = response.json()
                 url = self.get_next_page(json)
@@ -61,6 +63,10 @@ class Api:
                             "stopa": row["values"][0]["val"],
                         }
                         stopa.append(data_row)
+                ##log
+                self.logger.info("download completed successfully")
+            else:
+                return None
             endtime = time.time()
             if (endtime - starttime) < 0.1:
                 time.sleep(0.1)
@@ -86,6 +92,6 @@ class ApiHelper:
         if response.status_code != 200:
             response.raise_for_status()
         elif not response.json().get("results"):
-            raise Exception("No result for current loop")
+            return False
         else:
             return True

@@ -1,7 +1,10 @@
 ############## IMPORT PACKAGES ##################
 import argparse
 import json
+import time
+import logging
 from ETL.extract import Api
+from dotenv import load_dotenv
 
 
 class UnemploymentDownloader:
@@ -16,23 +19,37 @@ class UnemploymentDownloader:
 
     def extract_data(self):
         if self.config:
-            with open(self.config) as config_file:
-                config_data = json.load(config_file)
+            try:
+                with open(self.config) as config_file:
+                    config_data = json.load(config_file)
+            except Exception as e:
+                logger.exception("Error while trying read confing.json")
             key_dict = self.get_download_options(config_data)
         else:
-            years = [self.year]
-            months = [self.month]
+            key_dict = {self.year: [self.month]}
 
+        logger.info(
+            f"data for the following years and months will be downloaded:\n {json.dumps(key_dict, indent=4)}"
+        )
         for year, month_list in key_dict.items():
             self.stopy_bezrobocia[year] = {}
             for month in month_list:
                 variable_id = self.api.get_variable_id(month)
+                ## fetch data
                 data = self.api.fetch_data(variable_id, year)
+                if not data:
+                    logger.warning(
+                        f"No data for variable: {variable_id}, year: {year}, month: {month}\n"
+                        "The next data won't be downloaded.\n"
+                        "The program is stopped."
+                    )
+                    break
                 self.stopy_bezrobocia[year][month] = data  ## temporary
                 # clear_data = self.transform.transform_data(data)
                 # self.stopy_bezrobocia[year][month] = clear_data
                 # self.saver.save_data(clear_data, month, year)
-        print(self.stopy_bezrobocia)
+
+        ##print(self.stopy_bezrobocia)
 
     def get_download_options(self, config):
         key_to_download = {}
@@ -42,18 +59,68 @@ class UnemploymentDownloader:
                 for month, month_downloaded in year_data["Months"].items():
                     if not month_downloaded:
                         key_to_download[year].append(month)
-
         return key_to_download
 
 
+# Custom formatter
+class MyFormatter(logging.Formatter):
+    formats = {
+        logging.DEBUG: "%(module)s: %(lineno)d: %(msg)s",
+        logging.INFO: "%(asctime)s - %(levelname)s - %(message)s",
+        logging.WARNING: "%(asctime)s - %(levelname)s - %(message)s",
+        logging.ERROR: "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(funcName)s",
+    }
+
+    def __init__(self, fmt="%(levelno)s: %(msg)s"):
+        super().__init__(fmt)
+
+    def format(self, record):
+        # Get the format based on the logging level
+        log_fmt = self.formats.get(record.levelno, self._fmt)
+
+        # Call the original formatter class to do the grunt work
+        result = logging.Formatter(log_fmt).format(record)
+
+        return result
+
+
+def initialize_logger():
+    logger = logging.getLogger(__name__)
+
+    fmt = MyFormatter()
+
+    hdlr = logging.FileHandler("Logs/app.log", mode="w")
+    hdlr.setLevel(logging.INFO)
+    hdlr.setFormatter(fmt)
+
+    ch = logging.StreamHandler()  # Dodanie StreamHandlera dla logów konsolowych
+    ch.setLevel(logging.INFO)
+    ch.setFormatter(fmt)
+
+    logger.addHandler(hdlr)
+    logger.addHandler(ch)  # Dodanie StreamHandlera do loggera
+
+    logger.setLevel(logging.DEBUG)
+    # logger.propagate = True  ## wyłącza logowanie w konsoli
+    return logger
+
+
 if __name__ == "__main__":
+    load_dotenv()
     parser = argparse.ArgumentParser(description="Data Extraction")
-    parser.add_argument("--year", type=int, help="Year to extract data")
-    parser.add_argument("--month", type=int, help="Month to extract data")
-    parser.add_argument("--config", help="Configuration file path")
+    group = parser.add_mutually_exclusive_group(required=False)
+    group.add_argument("--year", type=str, help="Year to extract data")
+    group.add_argument("--month", type=str, help="Month to extract data")
+    parser.add_argument(
+        "--config", help="Configuration file path", choices=["config.json"]
+    )
 
     args = parser.parse_args()
 
+    if args.config and (args.year or args.month):
+        parser.error(
+            "Please provide either a config file or year and month, but not both."
+        )
     if args.config:
         extractor = UnemploymentDownloader(config=args.config)
     elif args.year and args.month:
@@ -61,4 +128,6 @@ if __name__ == "__main__":
     else:
         parser.error("Please provide either a config file or year and month.")
 
+    logger = initialize_logger()
+    logger.info(f"Start program with the arguments: {args}")
     extractor.extract_data()

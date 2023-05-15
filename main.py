@@ -5,6 +5,7 @@ import time
 import logging
 from ETL.extract import Api
 from ETL.transform import Transform
+from ETL.load import FileManager, CsvSaver
 from dotenv import load_dotenv
 
 
@@ -16,7 +17,7 @@ class UnemploymentDownloader:
         self.stopy_bezrobocia = {}
         self.api = Api()
         self.transform = Transform()  ## ToDo
-        self.saver = None  ## ToDo
+        self.saver = CsvSaver(file_manager=FileManager())  ## ToDo
 
     def extract_data(self):
         if self.config:
@@ -48,8 +49,7 @@ class UnemploymentDownloader:
                 # self.stopy_bezrobocia[year][month] = data  ## temporary
                 clear_data = self.transform.transform_data_for_API(data)
                 self.stopy_bezrobocia[year][month] = clear_data
-                print(clear_data)
-                # self.saver.save_data(clear_data, month, year)
+                self.saver.save_dataframe(clear_data, month, year)
 
         ##print(self.stopy_bezrobocia)
 
@@ -92,7 +92,8 @@ def initialize_logger():
 
     fmt = MyFormatter()
 
-    hdlr = logging.FileHandler(f"Logs/{starttime}.log", mode="w")
+    # hdlr = logging.FileHandler(f"Logs/{starttime}.log", mode="w")
+    hdlr = logging.FileHandler(f"Logs/{'APP'}.log", mode="w")
     hdlr.setLevel(logging.INFO)
     hdlr.setFormatter(fmt)
 
@@ -113,18 +114,15 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Data Extraction")
     group = parser.add_argument_group("Get data for one Year/Month")
     group.description = "Example --year 2023 --month 05"
+    group.add_argument("--year", type=str, help="Year to extract data", required=False)
     group.add_argument(
-        "--year", type=str, help="Year to extract data", required=False, nargs=1
-    )
-    group.add_argument(
-        "--month", type=str, help="Month to extract data", required=False, nargs=1
+        "--month", type=str, help="Month to extract data", required=False
     )
     ## Get data fron config.json
     parser.add_argument(
         "--config",
         help="Get data for years and months from the config.json",
         choices=["config.json"],
-        default="config.json",
     )
 
     args = parser.parse_args()
@@ -143,3 +141,5 @@ if __name__ == "__main__":
     logger = initialize_logger()
     logger.info(f"Start program with the arguments: {args}")
     extractor.extract_data()
+    logger.info(f"The program has ended successfully.")
+    exit()

@@ -46,7 +46,7 @@ class UnemploymentDownloader:
                     )
                     break
                 # self.stopy_bezrobocia[year][month] = data  ## temporary
-                clear_data = self.transform.transform_data(data)
+                clear_data = self.transform.transform_data_for_API(data)
                 self.stopy_bezrobocia[year][month] = clear_data
                 print(clear_data)
                 # self.saver.save_data(clear_data, month, year)
@@ -111,11 +111,21 @@ def initialize_logger():
 if __name__ == "__main__":
     load_dotenv()
     parser = argparse.ArgumentParser(description="Data Extraction")
-    group = parser.add_mutually_exclusive_group(required=False)
-    group.add_argument("--year", type=str, help="Year to extract data")
-    group.add_argument("--month", type=str, help="Month to extract data")
+    group = parser.add_argument_group("Get data for one Year/Month")
+    group.description = "Example --year 2023 --month 05"
+    group.add_argument(
+        "--year", type=str, help="Year to extract data", required=False, nargs=1
+    )
+    group.add_argument(
+        "--month", type=str, help="Month to extract data", required=False, nargs=1
+    )
+    ## Get data fron config.json
     parser.add_argument(
-        "--config", help="Configuration file path", choices=["config.json"]
+        "--config",
+        help="Get data for years and months from the config.json",
+        choices=["config.json"],
+        default="config.json",
+        nargs=1,
     )
 
     args = parser.parse_args()

@@ -125,7 +125,6 @@ if __name__ == "__main__":
         help="Get data for years and months from the config.json",
         choices=["config.json"],
         default="config.json",
-        nargs=1,
     )
 
     args = parser.parse_args()

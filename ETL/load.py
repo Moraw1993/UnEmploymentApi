@@ -26,7 +26,7 @@ class FileManager:
         os.remove(file_path)
 
     def create_file_name(self, month, year):
-        return f"stopa_powiaty_{month}_{str(year)[2:]}.csv"
+        return f"stopa powiaty {month}.{str(year)[2:]}.csv"
 
 
 class CsvSaver:

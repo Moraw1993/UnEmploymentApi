@@ -51,8 +51,13 @@ class Transform:
         df = df.reset_index(drop=True)
         return df
 
-    def transform_column(self, df, column, old_value, new_value, regex=True):
+    def transform_column(
+        self, df: pd.DataFrame, column: str, old_value: str, new_value: str, regex=True
+    ):
         df[column] = (
-            df[column].astype("string").str.replace(old_value, new_value, regex=regex)
+            df[column]
+            .astype("string")
+            .str.replace(old_value, new_value, regex=regex)
+            .str.strip()
         )
         return df

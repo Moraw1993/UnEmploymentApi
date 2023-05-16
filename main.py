@@ -2,7 +2,7 @@
 import argparse
 import json
 import time
-import logging
+from logger import get_logger
 from ETL.extract import Api
 from ETL.transform import Transform
 from ETL.load import FileManager, CsvSaver
@@ -75,53 +75,6 @@ class UnemploymentDownloader:
         ##print(self.stopy_bezrobocia)
 
 
-# Custom formatter
-class MyFormatter(logging.Formatter):
-    formats = {
-        logging.DEBUG: "%(module)s: %(lineno)d: %(msg)s",
-        logging.INFO: "%(asctime)s - %(levelname)s - %(message)s",
-        logging.WARNING: "%(asctime)s - %(levelname)s - %(message)s",
-        logging.ERROR: "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(funcName)s",
-    }
-
-    def __init__(self, fmt="%(levelno)s: %(msg)s"):
-        super().__init__(fmt)
-
-    def format(self, record):
-        # Get the format based on the logging level
-        log_fmt = self.formats.get(record.levelno, self._fmt)
-
-        # Call the original formatter class to do the grunt work
-        result = logging.Formatter(log_fmt).format(record)
-
-        return result
-
-
-def initialize_logger():
-    starttime = time.strftime("%Y%m%d_%H%M%S", time.localtime())
-    logger = logging.getLogger(__name__)
-
-    fmt = MyFormatter()
-
-    # hdlr = logging.FileHandler(f"Logs/{starttime}.log", mode="w")
-    hdlr = logging.FileHandler(f"Logs/{'APP'}.log", mode="w")
-    hdlr.setLevel(logging.INFO)
-    hdlr.setFormatter(fmt)
-
-    ch = logging.StreamHandler()  # Dodanie StreamHandlera dla logów konsolowych
-    ch.setLevel(logging.INFO)
-    ch.setFormatter(fmt)
-
-    # TODO Add SMPThandler to init e-mail sandler for errors
-
-    logger.addHandler(hdlr)
-    logger.addHandler(ch)  # Dodanie StreamHandlera do loggera
-
-    logger.setLevel(logging.DEBUG)
-    # logger.propagate = True  ## wyłącza logowanie w konsoli
-    return logger
-
-
 def validate_year(year):
     if len(year) != 4 or not year.isdigit():
         raise argparse.ArgumentTypeError("Year must have 4 digits.")
@@ -141,14 +94,16 @@ if __name__ == "__main__":
     load_dotenv()
     parser = argparse.ArgumentParser(description="Data Extraction")
     group = parser.add_argument_group("Get data for one Year/Month")
-    group.description = "Example --year 2023 --month 05"
+    group.description = "Example: python main_script.py --year 2023 --month 05"
     group.add_argument(
-        "--year", type=validate_year, help="Year to extract data", required=False
+        "--year",
+        type=validate_year,
+        help="Year from range (2000-2099) to extract data.\nThis argument can be used alone",
     )
     group.add_argument(
         "--month",
         type=validate_month,
-        help="Month to extract data",
+        help="Month to extract data.\nthis argument must be used with --year",
         choices=[
             "01",
             "02",
@@ -195,7 +150,7 @@ if __name__ == "__main__":
     else:
         parser.error("Please provide either a config file or year and month.")
 
-    logger = initialize_logger()
+    logger = get_logger(__name__)
     logger.info(f"Start program with the arguments: {args}")
     extractor.extract_data()
     logger.info(f"The program has ended successfully.")

@@ -1,80 +1,12 @@
 ############## IMPORT PACKAGES ##################
 import argparse
-import json
-import time
 from logger import get_logger
-from ETL.extract import Api
-from ETL.transform import Transform
-from ETL.load import FileManager, CsvSaver
 from utilities import ConfigManager
 from dotenv import load_dotenv
+from downloader import UnemploymentDownloader
 
 
-class UnemploymentDownloader:
-    def __init__(self, config=None, year=None, month=None) -> None:
-        self.config = config
-        self.year = year
-        self.month = month
-        self.stopy_bezrobocia = {}
-        self.api = Api()
-        self.transform = Transform()  ## ToDo
-        self.saver = CsvSaver(file_manager=FileManager())  ## ToDo
-        self.configManager = ConfigManager()
-
-    def extract_data(self):
-        if self.config:
-            try:
-                self.configManager.load_config(self.config)
-            except Exception as e:
-                logger.exception("Error while trying read confing.json")
-            key_dict = self.configManager.get_download_options()
-        else:
-            ## if only the year argument is set then set the month variable to all months of the year
-            if self.month is None:
-                self.month = [
-                    "01",
-                    "02",
-                    "03",
-                    "04",
-                    "05",
-                    "06",
-                    "07",
-                    "08",
-                    "09",
-                    "10",
-                    "11",
-                    "12",
-                ]
-            if not isinstance(self.month, list):
-                self.month = [self.month]
-            key_dict = {self.year: self.month}
-
-        logger.info(
-            f"data for the following years and months will be downloaded:\n {json.dumps(key_dict, indent=4)}"
-        )
-        for year, month_list in key_dict.items():
-            self.stopy_bezrobocia[year] = {}
-            for month in month_list:
-                variable_id = self.api.get_variable_id(month)
-                ## fetch data
-                data = self.api.fetch_data(variable_id, year)
-                if not data:
-                    logger.warning(
-                        f"No data for variable: {variable_id}, year: {year}, month: {month}\n"
-                        "The next data won't be downloaded.\n"
-                        "The program is stopped."
-                    )
-                    break
-                # self.stopy_bezrobocia[year][month] = data  ## temporary
-                clear_data = self.transform.transform_data_for_API(data)
-                self.stopy_bezrobocia[year][month] = clear_data
-                self.saver.save_dataframe(clear_data, month, year)
-                if self.config:
-                    self.configManager.update_config("config.json", year, month, True)
-
-        ##print(self.stopy_bezrobocia)
-
-
+### Validate functions for type argument
 def validate_year(year):
     if len(year) != 4 or not year.isdigit():
         raise argparse.ArgumentTypeError("Year must have 4 digits.")
@@ -90,20 +22,40 @@ def validate_month(month):
     return month
 
 
-if __name__ == "__main__":
+def validate_add_year(value):
+    if int(value) <= 0:
+        raise argparse.ArgumentTypeError("The given value must be a positive value")
+    return int(value)
+
+
+def main():
+    ### load data for .env
     load_dotenv()
+    ### init logger
+    logger = get_logger(__name__)
+    ### init parser
     parser = argparse.ArgumentParser(description="Data Extraction")
-    group = parser.add_argument_group("Get data for one Year/Month")
-    group.description = "Example: python main_script.py --year 2023 --month 05"
-    group.add_argument(
+
+    ### create parser group for the call config downloader
+    config_group = parser.add_argument_group("Get data using config.json")
+    config_group.add_argument(
+        "--config",
+        help="Get data for years and months from the config.json",
+        metavar="CONFIG_FILE",
+        choices=["config.json"],
+    )
+
+    ### create parser group for the specific date downloader
+    data_group = parser.add_argument_group("Get data for the specific date")
+    data_group.add_argument(
         "--year",
         type=validate_year,
         help="Year from range (2000-2099) to extract data.\nThis argument can be used alone",
     )
-    group.add_argument(
+    data_group.add_argument(
         "--month",
         type=validate_month,
-        help="Month to extract data.\nthis argument must be used with --year",
+        help="Month to extract data.\nThis argument must be used with --year",
         choices=[
             "01",
             "02",
@@ -119,39 +71,47 @@ if __name__ == "__main__":
             "12",
         ],
     )
-    ## Get data fron config.json
-    parser.add_argument(
-        "--config",
-        help="Get data for years and months from the config.json",
-        choices=["config.json"],
-    )
-    parser.add_argument(
+
+    ### create parser group for the add new year and months to the config file
+    add_year_group = parser.add_argument_group("Add Year")
+    add_year_group.add_argument(
         "--add_year",
         help="Add the next year with all months set to False in the config.json",
-        action="store_true",
+        action="store",
+        type=validate_add_year,
+        metavar="NUMBER_OF_YEARS",
     )
-    ##TODO Add parser for add next year with false value to the config.json
 
+    ### parse groups
     args = parser.parse_args()
 
-    if args.config and (args.year or args.month or args.add_year):
+    ### check combination of optional arguments
+    if (args.config and (args.year or args.month or args.add_year)) or (
+        args.add_year and (args.year or args.month)
+    ):
         parser.error(
-            "Please provide either a config file or year and month, but not both."
+            "Please provide either a config file, or year and month, or add_year, but not in combination."
         )
+
     if args.config:
         extractor = UnemploymentDownloader(config=args.config)
     elif args.year or args.month:
+        if not args.year:
+            parser.error("Please provide year argument")
         extractor = UnemploymentDownloader(year=args.year, month=args.month)
     elif args.add_year:
         config_manager = ConfigManager()
         config_manager.load_config("config.json")
-        config_manager.add_next_year("config.json")
+        for _ in range(args.add_year):
+            config_manager.add_next_year("config.json")
         exit()
     else:
         parser.error("Please provide either a config file or year and month.")
 
-    logger = get_logger(__name__)
     logger.info(f"Start program with the arguments: {args}")
-    extractor.extract_data()
+    extractor.run_ETL()
     logger.info(f"The program has ended successfully.")
-    exit()
+
+
+if __name__ == "__main__":
+    main()

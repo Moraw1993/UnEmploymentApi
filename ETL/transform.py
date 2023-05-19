@@ -6,7 +6,7 @@ class Transform:
     def __init__(self):
         pass
 
-    def transform_data_for_API(self, data):
+    def transform_data_from_API(self, data):
         id_reg_pattern = {
             "Makro": r"^0([1-7])0{10}$",
             "Region": r"^0([1-7]\d{2}[1-2])0{7}$",

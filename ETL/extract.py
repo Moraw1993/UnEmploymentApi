@@ -40,14 +40,26 @@ class Api:
         stopa = []
         url = f"https://bdl.stat.gov.pl/api/v1/data/by-Variable/{variable_id}?year={year}&format=json&page-size=100"
         header = self.header_builder.build_header()
+        starttime = time.time()
         while url:
-            starttime = time.time()
             try:
                 self.logger.info(f"Start trying to download data from the URL: {url}")
                 response = self.request_handler.get(url, header)
+            except requests.exceptions.RequestException:
+                self.logger.exception(f"Problem with the internet connection:\n")
+                self.logger.info(
+                    "No internet connection. Pausing data fetching. Will trying again at 30 sec"
+                )
+                time.sleep(30)
+                if time.time() - starttime > 180:
+                    self.logger.critical(
+                        "after 3 minutes of reconnection attempts, the program ended",
+                        stack_info=True,
+                    )
+                    raise requests.exceptions.RequestException
+                continue
             except Exception as e:
-                self.logger.exception(f"Problem with the: {str(type(e).__name__)}\n")
-                raise
+                self.logger.exception("Other exception while get data")
 
             if self.request_handler.validate_response(response):
                 json = response.json()
@@ -95,6 +107,13 @@ class RequestHandler:
             return False
         else:
             return True
+
+    def check_internet_connection(self):
+        try:
+            requests.get("http://www.google.com", timeout=1)
+            return True
+        except requests.exceptions.RequestException:
+            return False
 
 
 class HeaderBuilder:

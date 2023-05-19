@@ -1,4 +1,4 @@
-from ETL.extract import Api
+from ETL.extract import Extractor
 from ETL.transform import Transform
 from ETL.load import FileManager, CsvSaver
 from utilities import ConfigManager
@@ -20,7 +20,7 @@ class UnemploymentDownloader:
         self.year = year
         self.month = month
         self.stopy_bezrobocia = {}
-        self.api = Api()
+        self.api = Extractor()
         self.transform = Transform()
         self.saver = CsvSaver(file_manager=FileManager())
         self.configManager = ConfigManager()
@@ -86,9 +86,9 @@ class UnemploymentDownloader:
                 self.month = [self.month]
             key_dict = {self.year: self.month}
 
+        if not key_dict:
+            self.logger.error("Empty key_dict")
         self.logger.info(
             f"data for the following years and months will be downloaded:\n {json.dumps(key_dict, indent=4)}"
         )
-        if not key_dict:
-            self.logger.error("Empty key_dict")
         return key_dict

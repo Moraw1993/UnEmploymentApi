@@ -31,8 +31,7 @@ def validate_add_year(value):
 def main():
     ### load data for .env
     load_dotenv()
-    ### init logger
-    logger = get_logger(__name__)
+
     ### init parser
     parser = argparse.ArgumentParser(description="Data Extraction")
 
@@ -94,11 +93,11 @@ def main():
         )
 
     if args.config:
-        extractor = UnemploymentDownloader(config=args.config)
+        ETLclient = UnemploymentDownloader(config=args.config)
     elif args.year or args.month:
         if not args.year:
             parser.error("Please provide year argument")
-        extractor = UnemploymentDownloader(year=args.year, month=args.month)
+        ETLclient = UnemploymentDownloader(year=args.year, month=args.month)
     elif args.add_year:
         config_manager = ConfigManager()
         config_manager.load_config("config.json")
@@ -108,8 +107,12 @@ def main():
     else:
         parser.error("Please provide either a config file or year and month.")
 
+    ### init logger
+    logger = get_logger(__name__)
     logger.info(f"Start program with the arguments: {args}")
-    extractor.run_ETL()
+    ### start ETL
+    ETLclient.run_ETL()
+    ### end program
     logger.info(f"The program has ended successfully.")
 
 

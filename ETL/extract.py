@@ -10,8 +10,24 @@ import requests
 import time
 
 
-class Api:
+class Extractor:
+    """
+    Class for fetching data from an API.
+
+    Methods:
+        get_variable_id(): Retrieves the variable ID for a given month.
+        fetch_data(): Fetches data from the API for a specific variable and year.
+        get_next_page(): Retrieves the URL for the next page of results.
+
+    Raises:
+        ValueError: If an invalid month is provided.
+        requests.exceptions.RequestException: If there is a problem with the internet connection.
+    """
+
     def __init__(self):
+        """
+        Initializes the Api instance.
+        """
         self.VARIABLE_ID_MAP = {
             "01": "461680",
             "02": "461681",
@@ -31,12 +47,37 @@ class Api:
         self.header_builder = HeaderBuilder(os.getenv("X-Client-Id"))
 
     def get_variable_id(self, month):
+        """
+        Retrieves the variable ID for a given month.
+
+        Args:
+            month: The month for which the variable ID is requested.
+
+        Returns:
+            str: The variable ID for the specified month.
+
+        Raises:
+            ValueError: If the provided month is invalid.
+        """
         month_str = str(month)
         if month_str not in self.VARIABLE_ID_MAP.keys():
             raise ValueError("Invalid month")
         return self.VARIABLE_ID_MAP[month_str]
 
     def fetch_data(self, variable_id: str, year: str):
+        """
+        Fetches data from the API for a specific variable and year.
+
+        Args:
+            variable_id (str): The variable ID for which the data is to be fetched.
+            year (str): The year for which the data is to be fetched.
+
+        Returns:
+            list: A list of dictionaries containing the fetched data.
+
+        Raises:
+            requests.exceptions.RequestException: If there is a problem with the internet connection.
+        """
         stopa = []
         url = f"https://bdl.stat.gov.pl/api/v1/data/by-Variable/{variable_id}?year={year}&format=json&page-size=100"
         header = self.header_builder.build_header()
@@ -85,6 +126,15 @@ class Api:
         return stopa
 
     def get_next_page(self, json: requests.Response):
+        """
+        Retrieves the URL for the next page of results.
+
+        Args:
+            json (requests.Response): The JSON response object.
+
+        Returns:
+            str: The URL for the next page of results, or None if there is no next page.
+        """
         next_page_url = json["links"].get("next")
         if next_page_url:
             url = next_page_url

@@ -1,5 +1,7 @@
 import logging
+from logging import handlers
 import time
+import os
 
 
 class MyFormatter(logging.Formatter):
@@ -29,8 +31,8 @@ def initialize_logger(name):
 
     fmt = MyFormatter()
 
-    # hdlr = logging.FileHandler(f"Logs/{starttime}.log", mode="w")
-    hdlr = logging.FileHandler(f"Logs/{'APP'}.log", mode="w")
+    hdlr = logging.FileHandler(f"Logs/{starttime}.log", mode="w")
+    # hdlr = logging.FileHandler(f"Logs/{'APP'}.log", mode="w")
     hdlr.setLevel(logging.INFO)
     hdlr.setFormatter(fmt)
 
@@ -39,6 +41,25 @@ def initialize_logger(name):
     ch.setFormatter(fmt)
 
     # TODO Add SMPThandler to init e-mail sandler for errors
+    ## Smptlogger
+    email_subject = f"Error occured in UnEmploymentApi Download. Look at log {starttime}.log"  ##temporary
+    host = os.getenv("mailhost")
+    port = os.getenv("port")
+    emailFrom = os.getenv("EmailAcc")
+    emailTo: list = os.getenv("EmailTo").split(",")
+    credentials: tuple = (os.getenv("EmailAcc"), os.getenv("EmailPass"))
+
+    smtp_handler = handlers.SMTPHandler(
+        mailhost=(host, port),
+        fromaddr=emailFrom,
+        toaddrs=emailTo,
+        subject=email_subject,
+        credentials=credentials,
+        secure=(),
+    )
+    smtp_handler.setLevel(logging.ERROR)
+    smtp_handler.setFormatter(fmt)
+    logger.addHandler(smtp_handler)
 
     logger.addHandler(hdlr)
     logger.addHandler(ch)  # Dodanie StreamHandlera do loggera

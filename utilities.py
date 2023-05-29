@@ -3,7 +3,9 @@
 ############################################
 
 import json
+from datetime import datetime, timedelta
 from abc import ABC, abstractmethod
+import os
 
 
 class IConfigManager(ABC):
@@ -13,10 +15,6 @@ class IConfigManager(ABC):
 
     @abstractmethod
     def update_config(self, file_path: str, year: str, month: str, value: any) -> None:
-        pass
-
-    @abstractmethod
-    def validate_config(self, file_path: str) -> bool:
         pass
 
     @abstractmethod
@@ -134,6 +132,18 @@ class ConfigManager(IConfigManager):
         with open(file_path, "w") as f:
             json.dump(self.config, f, indent=4)
 
+    def check_all_data_downloaded(self, file_path: str) -> None:
+        """
+        Checks if all the data has been downloaded for each year and adds the next year if all data has been downloaded.
+
+        Args:
+            file_path (str): The path to the configuration file.
+        """
+        download_options = self.get_download_options()
+
+        if not download_options:
+            self.add_next_year(file_path)
+
     def _validate_year_in_config(self):
         if "Year" not in self.config:
             raise ValueError("Invalid config file. 'Year' key not found.")
@@ -179,3 +189,29 @@ class ConfigManager(IConfigManager):
             )
 
         return month_config
+
+
+#################################################################################
+############ USUWANIE LOGOW GDY CZAS LOGU JEST DŁUŻSZY NIŻ 30 DNI ###############
+#################################################################################
+
+
+def delete_logs(folder_name: str) -> None:
+    ### calculate current date and curr date -30 days
+    today = datetime.today()
+    month_ago = today - timedelta(days=30)
+
+    ## iterate though the log folder
+    for file_name in os.listdir(folder_name):
+        file_path = os.path.join(folder_name, file_name)
+
+        if file_name.endswith("log"):
+            ## get date from the file name
+            log_date_str = file_name[
+                :8
+            ]  ## pobierz tylko 8 pierwszych znaków np. 20220412
+            log_date = datetime.strptime(log_date_str, "%Y%m%d")
+
+            ## Delete file if is the older than one month
+            if log_date < month_ago:
+                os.remove(file_path)

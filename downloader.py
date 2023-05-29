@@ -1,6 +1,6 @@
-from ETL.extract import Extractor
-from ETL.transform import Transform
-from ETL.load import FileManager, CsvSaver
+from etl.extract import Extractor
+from etl.transform import Transform
+from etl.load import FileManager, CsvSaver
 from utilities import ConfigManager
 import json
 from logging import getLogger

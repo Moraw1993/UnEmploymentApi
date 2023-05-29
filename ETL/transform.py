@@ -1,5 +1,6 @@
 import pandas as pd
 from typing import Dict
+import re
 
 
 class Transform:
@@ -36,6 +37,7 @@ class Transform:
             "Region": r"^0([1-7]\d{2}[1-2])0{7}$",
             "Podregion": r"0[1-7]\d{3}([0-9][1-9]|[1-9][0-9])0{5}$",
             "Nieokreślona": r"([0-9]{9}998)$",
+            "Tekst": r".*REGION.*",
         }
 
         df = pd.DataFrame(data)
@@ -75,7 +77,14 @@ class Transform:
 
         """
         for pat in reg_pattern.values():
-            df = df[df["id"].astype("string").str.extract(pat, expand=False).isna()]
+            if pat == ".*REGION.*":
+                df = df[
+                    ~df["id"]
+                    .astype(str)
+                    .str.contains(pat, flags=re.IGNORECASE, regex=True)
+                ]
+            else:
+                df = df[df["id"].astype("string").str.extract(pat, expand=False).isna()]
         return df
 
     def map_columns(self, df, new_columns):

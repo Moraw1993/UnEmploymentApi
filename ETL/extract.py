@@ -44,7 +44,7 @@ class Extractor:
         }
         self.logger = logging.getLogger("__main__")
         self.request_handler = RequestHandler()
-        self.header_builder = HeaderBuilder(os.getenv("X-Client-Id"))
+        self.header_builder = HeaderBuilder(os.getenv("X-ClientId"))
 
     def get_variable_id(self, month):
         """
@@ -87,7 +87,9 @@ class Extractor:
                 self.logger.info(f"Start trying to download data from the URL: {url}")
                 response = self.request_handler.get(url, header)
             except requests.exceptions.RequestException:
-                self.logger.exception(f"Problem with the internet connection:\n")
+                self.logger.error(
+                    f"Problem with the internet connection:\n", exc_info=1
+                )
                 self.logger.info(
                     "No internet connection. Pausing data fetching. Will trying again at 30 sec"
                 )
@@ -107,13 +109,24 @@ class Extractor:
                 url = self.get_next_page(json)
                 results = json["results"]
                 for row in results:
-                    if row["id"]:
-                        data_row = {
-                            "id": row["id"],
-                            "name": row["name"],
-                            "stopa": row["values"][0]["val"],
-                        }
-                        stopa.append(data_row)
+                    try:
+                        if row["id"] and len(row["id"]) == 12:
+                            data_row = {
+                                "id": row["id"],
+                                "name": row["name"],
+                                "stopa": row["values"][0]["val"],
+                            }
+                            stopa.append(data_row)
+                        else:
+                            raise ValueError(
+                                "Id can't be None and should have 12 chars"
+                            )
+                    except:
+                        logging.error(
+                            "Something problem with ID column during extract data",
+                            exc_info=1,
+                        )
+                        raise
 
                 self.logger.info("Download completed successfully")
             else:

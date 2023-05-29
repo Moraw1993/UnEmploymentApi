@@ -1,7 +1,7 @@
 ############## IMPORT PACKAGES ##################
 import argparse
 from logger import get_logger
-from utilities import ConfigManager
+from utilities import ConfigManager, delete_logs
 from dotenv import load_dotenv
 from downloader import UnemploymentDownloader
 
@@ -107,13 +107,20 @@ def main():
     else:
         parser.error("Please provide either a config file or year and month.")
 
-    ### init logger
-    logger = get_logger(__name__)
-    logger.info(f"Start program with the arguments: {args}")
-    ### start ETL
-    ETLclient.run_ETL()
-    ### end program
-    logger.info(f"The program has ended successfully.")
+    try:
+        ### init logger
+        logger = get_logger(__name__)
+        ## delete log older then 30 days
+        delete_logs("Logs")
+        logger.info(f"Start program with the arguments: {args}")
+        ### start ETL
+        ETLclient.run_ETL()
+        ### end program
+        logger.info(f"The program has ended successfully.")
+    except:
+        logger.exception(
+            "an error occurred that was not handled while the application was running",
+        )
 
 
 if __name__ == "__main__":

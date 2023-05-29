@@ -24,7 +24,7 @@ class UnemploymentDownloader:
         self.transform = Transform()
         self.saver = CsvSaver(file_manager=FileManager())
         self.configManager = ConfigManager()
-        self.logger = getLogger()
+        self.logger = getLogger("__main__")
 
     def run_ETL(self):
         """
@@ -50,6 +50,7 @@ class UnemploymentDownloader:
                 self.saver.save_dataframe(clear_data, month, year)
                 if self.config:
                     self.configManager.update_config("config.json", year, month, True)
+                    self.configManager.check_all_data_downloaded("config.json")
 
     def GetDictYearMonthToDownload(self):
         """
@@ -85,10 +86,12 @@ class UnemploymentDownloader:
             if not isinstance(self.month, list):
                 self.month = [self.month]
             key_dict = {self.year: self.month}
-
-        if not key_dict:
-            self.logger.error("Empty key_dict")
-        self.logger.info(
-            f"data for the following years and months will be downloaded:\n {json.dumps(key_dict, indent=4)}"
-        )
-        return key_dict
+        try:
+            if not key_dict:
+                raise ValueError("No data to downlaod")
+            self.logger.info(
+                f"data for the following years and months will be downloaded:\n {json.dumps(key_dict, indent=4)}"
+            )
+            return key_dict
+        except:
+            self.logger.error("No data to download", exc_info=1)

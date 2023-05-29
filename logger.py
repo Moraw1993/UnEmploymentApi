@@ -20,6 +20,7 @@ class MyFormatter(logging.Formatter):
         logging.INFO: "%(asctime)s - %(levelname)s - %(message)s",
         logging.WARNING: "%(asctime)s - %(levelname)s - %(message)s",
         logging.ERROR: "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(funcName)s",
+        logging.CRITICAL: "%(asctime)s - %(name)s - %(levelname)s - %(message)s - %(funcName)s",
     }
 
     def __init__(self, fmt="%(levelno)s: %(msg)s"):
@@ -73,7 +74,6 @@ def initialize_logger(name):
     ch.setLevel(logging.INFO)
     ch.setFormatter(fmt)
 
-    # TODO: Add SMTPHandler to initialize email handler for error logging
     ## Smtplogger
     email_subject = f"Error occurred in UnEmploymentApi Download. Look at log {starttime}.log"  ## temporary
     host = os.getenv("mailhost")
@@ -81,6 +81,12 @@ def initialize_logger(name):
     emailFrom = os.getenv("EmailAcc")
     emailTo: list = os.getenv("EmailTo").split(",")
     credentials: tuple = (os.getenv("EmailAcc"), os.getenv("EmailPass"))
+
+    if any(
+        var == "" or var is None
+        for var in [email_subject, host, port, emailFrom, emailTo, credentials]
+    ):
+        raise ValueError("One or more variables in .env are None")
 
     smtp_handler = handlers.SMTPHandler(
         mailhost=(host, port),

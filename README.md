@@ -1,8 +1,27 @@
 # UnEmploymentApi
 
-ETL Pipline for Unemployment rate from BDL API
+Ten projekt przedstawia proces ETL pipeline (Extract, Transform, Load) w języku Python, który pobiera dane z REST-API BDL (Bank danych lokalnych), przetwarza je i zapisuje do plików w formacie .csv
 
-## Install Python on Oracle linux 6
+## Opis projektu
+
+W związku z potrzebą uruchomienia programu na Oracle linux 6, została użyta werjsa Python 3.6.8
+
+Projekt ma na celu zautomatyzowanie pobierania danych z REST-API BDL, które zawierają informacje statystyczne na temat stopy bezrobocia w powiatach, województach i Polsce. Naspnie dane są przetwarzane, tak aby uzyskać potrzebne informacje w odpowiednim formacie, a finalnie zapisywane do plików CSV.
+
+Użytkownik będzie miał wybór sposobu pobierania danych:
+
+- Pobieranie danych dla kolejnych miesięcy zgodnych z plikiem konfiguracyjnym.
+- Wybór roku lub/i miesiąca, dla którego mają być pobrane dane.
+
+## Kroki instalacji dla Oracle Linux 6
+
+1. [Instalacja pythona 3.6.8 na Oracle linux 6](#install-python-on-oracle-linux-6)
+
+2. [Pobranie repo projektu](#pobieranie-projektu)
+
+3. [Konfiguracja projektu](#konfiguracja-projektu)
+
+### install python on oracle linux 6
 
 W celu zapewnienia prawidłowego działania Pythona należy przejść poniższe korki:
 
@@ -62,3 +81,11 @@ python36
 ~~~~
 
 Po urochomieniu powinno przejść do pythona. w celu wyjścia wpisujemy exit()
+
+### pobieranie projektu
+
+...
+
+### konfiguracja projektu
+
+...

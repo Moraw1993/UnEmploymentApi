@@ -65,7 +65,7 @@ def initialize_logger(name):
     fmt = MyFormatter()
 
     # Configure the file handler for writing logs to a file
-    hdlr = logging.FileHandler(f"Logs/{starttime}.log", mode="w")
+    hdlr = logging.FileHandler(f"logs/{starttime}.log", mode="w")
     hdlr.setLevel(logging.INFO)
     hdlr.setFormatter(fmt)
 

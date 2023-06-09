@@ -111,7 +111,7 @@ def main():
         ### init logger
         logger = get_logger(__name__)
         ## delete log older then 30 days
-        delete_logs("Logs")
+        delete_logs("logs")
         logger.info(f"Start program with the arguments: {args}")
         ### start ETL
         ETLclient.run_ETL()

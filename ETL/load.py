@@ -20,31 +20,38 @@ class FileManager:
 
     """
 
-    def __init__(self, output_folder=os.getenv("outputFolder", "output")):
-        self.output_folder = output_folder
+    def __init__(self, output_folders=None):
+        if output_folders is None:
+            self.output_folders = os.getenv("outputFolder", "output").split(",")
+        else:
+            self.output_folders = output_folders
 
-    def create_directory(self):
+    def create_directories(self):
         """
-        Creates the output directory if it doesn't exist.
+        Creates the output directories if they don't exist.
 
         """
 
-        if not os.path.exists(self.output_folder):
-            os.makedirs(self.output_folder)
+        for folder in self.output_folders:
+            if not os.path.exists(folder):
+                os.makedirs(folder)
 
-    def get_file_path(self, file_name):
+    def get_file_paths(self, file_name):
         """
-        Returns the full file path based on the output folder and the provided file name.
+        Returns a list of full file paths based on the output folders and the provided file name.
 
         Args:
             file_name (str): File name.
 
         Returns:
-            str: Full file path.
+            list: List of full file paths.
 
         """
 
-        return os.path.join(self.output_folder, file_name)
+        file_paths = []
+        for folder in self.output_folders:
+            file_paths.append(os.path.join(folder, file_name))
+        return file_paths
 
     def file_exists(self, file_path):
         """
@@ -120,13 +127,13 @@ class CsvSaver:
             return
 
         # Create the output directory if it doesn't exist
-        self.file_manager.create_directory()
+        self.file_manager.create_directories()
 
         # Generate the file name based on the month and year
         file_name = self.file_manager.create_file_name(month, year)
 
         # Get the full file path
-        file_path = self.file_manager.get_file_path(file_name)
+        file_paths = self.file_manager.get_file_paths(file_name)
 
         should_override = None
 
@@ -136,31 +143,34 @@ class CsvSaver:
                 f"File '{file_path}' already exists\nYou have 60 seconds to make a decision.\nDo you want to override it? (Y/N):\n"
             )
 
-        if self.file_manager.file_exists(file_path):
-            # If the file already exists, prompt the user for a decision within 60 seconds
-            input_thread = threading.Thread(target=wait_for_input)
-            input_thread.daemon = True
-            input_thread.start()
-            input_thread.join(timeout=60)
+        for file_path in file_paths:
+            if self.file_manager.file_exists(file_path):
+                # If the file already exists, prompt the user for a decision within 60 seconds
+                input_thread = threading.Thread(target=wait_for_input)
+                input_thread.daemon = True
+                input_thread.start()
+                input_thread.join(timeout=60)
 
-            if input_thread.is_alive():
-                # If the user doesn't provide input within 60 seconds, assume "Y" (yes)
-                should_override = "Y"
-                input_thread.join(timeout=1)
+                if input_thread.is_alive():
+                    # If the user doesn't provide input within 60 seconds, assume "Y" (yes)
+                    should_override = "Y"
+                    input_thread.join(timeout=1)
 
-            if should_override.lower() != "y":
-                # If the user chose not to override the existing file, log a warning and return
-                self.logger.warning(
-                    "File not saved because you chose not to overwrite the existing file."
-                )
-                return
-            else:
-                # If the user chose to override, delete the existing file
-                self.file_manager.delete_file(file_path)
-                self.logger.warning(
-                    f"An existing file at the path '{file_path}' has been deleted."
-                )
+                if should_override.lower() != "y":
+                    # If the user chose not to override the existing file, log a warning and continue to the next file
+                    self.logger.warning(
+                        f"File '{file_path}' not saved because you chose not to overwrite the existing file."
+                    )
+                    continue
+                else:
+                    # If the user chose to override, delete the existing file
+                    self.file_manager.delete_file(file_path)
+                    self.logger.warning(
+                        f"An existing file at the path '{file_path}' has been deleted."
+                    )
 
-        # Save the DataFrame as a CSV file
-        dataframe.to_csv(file_path, sep=";", index=False, encoding="ANSI")
-        self.logger.info(f"Dataframe saved successfully to the path: '{file_path}'.")
+            # Save the DataFrame as a CSV file
+            dataframe.to_csv(file_path, sep=";", index=False, encoding="ANSI")
+            self.logger.info(
+                f"Dataframe saved successfully to the path: '{file_path}'."
+            )

@@ -21,6 +21,8 @@ Użytkownik będzie miał wybór sposobu pobierania danych:
 
 3. [Konfiguracja projektu](#konfiguracja-projektu)
 
+4. [Uruchomienie programu](#uruchomienie-narzędzia)
+
 ### Instalacja pythona na oracle linux 6
 
 W celu zapewnienia prawidłowego działania Pythona należy przejść poniższe korki:
@@ -147,7 +149,19 @@ pip install -r requirements.txt
 
 Program napisany jest zgodnie ze wzrocem CLI (Command Line Interface).
 
-Uwaga! przed użyciem należy aktywować środowisko wirtualne i znaleźć się w folderze projektu
+Uwaga! Przed uruchomieniem naleźy znaleźć się w folderze projektu i uruchomić środowisko wirtualne:
+
+- Linux:
+
+    ~~~~bash
+    source venv\bin\activate
+    ~~~~
+
+- Windows:
+
+    ~~~~cmd
+    venv\scripts\activate.bat
+    ~~~~
 
 W celu wylistowania dostępnych możliwośći użycia programu należy użyć komendy:
 

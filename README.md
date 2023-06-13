@@ -113,7 +113,7 @@ W głównym folderze projektu musimy utworzyć niezbędne pliki do prawidłowego
 #### Instalacja środowiska wirtualnego
 
 ~~~~bash
-python3 -m venv my_venv
+python3 -m venv venv
 ~~~~
 
 #### utworzenie pliku ze zmiennymi środwiskowymi
@@ -140,7 +140,7 @@ port = port? np. dla gmail 587
 #### Aktywacja środowiska i instalacja niezbędnych paczek
 
 ~~~~bash
-source my_venv/bin/activate
+source venv/bin/activate
 
 pip install -r requirements.txt
 ~~~~

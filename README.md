@@ -147,9 +147,9 @@ pip install -r requirements.txt
 
 Program napisany jest zgodnie ze wzrocem CLI (Command Line Interface).
 
-W celu wylistowania dostępnych możliwośći użycia programu należy użyć komendy:
-
 Uwaga! przed użyciem należy aktywować środowisko wirtualne i znaleźć się w folderze projektu
+
+W celu wylistowania dostępnych możliwośći użycia programu należy użyć komendy:
 
 ~~~~bash
 python main.py -h
@@ -180,3 +180,14 @@ Możliwości:
     ~~~~
 
     *Należy pamięc, aby miesiąc był zawsze 2 znakowy np. 01,05,12*
+
+3. Dodawania roku do config.json
+
+    Program co zapis danych sprawdza wartość all_download w pliku config.json, jeżeli wszystkie lata mają flage true to dodaje kolejny rok z flagami false dla wszystkich miesięcy.
+
+    W celu wymuszenia dodania kolejnych lat możemy użyć komendy:
+
+    ~~~~bash
+    python main.py add_year X
+    ### gdzie X liczba lat które chcemy dodać np. 1. Zostanie dodany kolejny rok po najwyższym istniejącym.
+    ~~~~

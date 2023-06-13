@@ -170,7 +170,7 @@ class CsvSaver:
                     )
 
             # Save the DataFrame as a CSV file
-            dataframe.to_csv(file_path, sep=";", index=False, encoding="ANSI")
+            dataframe.to_csv(file_path, sep=";", index=False, encoding="UTF-8")
             self.logger.info(
                 f"Dataframe saved successfully to the path: '{file_path}'."
             )

@@ -1,0 +1,236 @@
+<!DOCTYPE html []>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="author" content="MarkdownViewer++" />
+    <title>README.md</title>
+    <style type="text/css">
+            
+/* Avoid page breaks inside the most common attributes, especially for exports (i.e. PDF) */
+td, h1, h2, h3, h4, h5, p, ul, ol, li {
+    page-break-inside: avoid; 
+}
+
+        </style>
+  </head>
+  <body>
+    <h1 id="unemploymentapi">UnEmploymentApi</h1>
+    <p>Ten projekt przedstawia proces ETL pipeline (Extract, Transform, Load) w języku Python, który pobiera dane z REST-API BDL (Bank danych lokalnych), przetwarza je i zapisuje do plików w formacie .csv</p>
+    <h2 id="opis-projektu">Opis projektu</h2>
+    <p>W związku z potrzebą uruchomienia programu na Oracle linux 6, została użyta werjsa Python 3.6.8</p>
+    <p>Projekt ma na celu zautomatyzowanie pobierania danych z REST-API BDL, które zawierają informacje statystyczne na temat stopy bezrobocia w powiatach, województach i Polsce. Naspnie dane są przetwarzane, tak aby uzyskać potrzebne informacje w odpowiednim formacie, a finalnie zapisywane do plików CSV.</p>
+    <p>Użytkownik będzie miał wybór sposobu pobierania danych:</p>
+    <ul>
+      <li>Pobieranie danych dla kolejnych miesięcy zgodnych z plikiem konfiguracyjnym.</li>
+      <li>Wybór roku lub/i miesiąca, dla którego mają być pobrane dane.</li>
+    </ul>
+    <h2 id="kroki-instalacji-dla-oracle-linux-6">Kroki instalacji dla Oracle Linux 6</h2>
+    <ol>
+      <li>
+        <p>
+          <a href="#instalacja-pythona-na-oracle-linux-6">Instalacja pythona 3.6.8 na Oracle linux 6</a>
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href="#pobieranie-projektu">Pobranie repo projektu</a>
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href="#konfiguracja-projektu">Konfiguracja projektu</a>
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href="#uruchomienie-narzedzia">Uruchomienie programu</a>
+        </p>
+      </li>
+    </ol>
+    <h3 id="instalacja-pythona-na-oracle-linux-6">Instalacja pythona na oracle linux 6</h3>
+    <p>W celu zapewnienia prawidłowego działania Pythona należy przejść poniższe korki:</p>
+    <p>Na samym początku musisz zainstalować niezbędne paczki do prawidłowego działania Pythona.</p>
+    <ol>
+      <li>
+        <p>Zainstaluj niezbędne paczki do prawidłowego działania pythona</p>
+        <pre>
+          <code class="language-bash">sudo yum install openssl openssl-devel zlib-devel bzip2 bzip2-devel readline-devel 
+sqlite sqlite-devel tk-devel libffi-devel gdbm-devel
+</code>
+        </pre>
+      </li>
+      <li>
+        <p>Utwórz folder <strong>python</strong>, w której zostanie pobrany plik:</p>
+        <pre>
+          <code class="language-bash">mkdir python
+cd python
+</code>
+        </pre>
+      </li>
+      <li>
+        <p>Pobierz Pythona w wersji 3.6.8:</p>
+        <pre>
+          <code class="language-bash">wget https://www.python.org/ftp/python/3.6.8/Python-3.6.8.tgz
+</code>
+        </pre>
+      </li>
+      <li>
+        <p>Rozpakuj pobrany plik:</p>
+        <pre>
+          <code class="language-bash">tar xvzf Python-3.6.8.tgz
+</code>
+        </pre>
+      </li>
+      <li>
+        <p>Przejdź do folderu Python-3.6.8 i uruchom proces konfiguracji środowiska. Użyj parametru --prefix, aby zmienić folder instalacji:</p>
+        <pre>
+          <code class="language-bash">cd Python-3.6.8
+./configure --prefix=/opt/python3.6
+</code>
+        </pre>
+      </li>
+      <li>
+        <p>Kompiluj i instaluj:</p>
+        <pre>
+          <code class="language-bash">make &amp;&amp; sudo make install
+</code>
+        </pre>
+      </li>
+      <li>
+        <p>Po instalacji wykonaj polecenia tworzące symboliczne linki:</p>
+        <pre>
+          <code class="language-bash">sudo ln -s /opt/python3.6/bin/python3.6 /usr/bin/python36
+sudo ln -s /opt/python3.6/bin/idle3.6 /usr/bin/idle-python36
+sudo ln -s /opt/python3.6/bin/pip3 /usr/bin/pip
+</code>
+        </pre>
+      </li>
+      <li>
+        <p>Przetestuj czy Python działa poprawnie:</p>
+        <pre>
+          <code class="language-bash">python36
+</code>
+        </pre>
+      </li>
+    </ol>
+    <p>Po uruchomieniu powinieneś być w interaktywnej konsoli Pythona. Aby wyjść, wpisz <strong>exit()</strong>.</p>
+    <h3 id="pobieranie-projektu">Pobieranie projektu</h3>
+    <h4 id="git">
+      <strong>GIT</strong>
+    </h4>
+    <pre>
+      <code class="language-bash">git clone https://github.com/Moraw1993/UnEmploymentApi.git
+</code>
+    </pre>
+    <h4 id="svn">
+      <strong>SVN</strong>
+    </h4>
+    <pre>
+      <code class="language-bash">svn checkout https://github.com/Moraw1993/UnEmploymentApi.git
+</code>
+    </pre>
+    <h4 id="zip">
+      <strong>ZIP</strong>
+    </h4>
+    <pre>
+      <code class="language-bash">wget https://github.com/Moraw1993/UnEmploymentApi/archive/refs/heads/main.zip
+
+unzip main.zip
+</code>
+    </pre>
+    <h3 id="konfiguracja-projektu">Konfiguracja projektu</h3>
+    <p>W głównym folderze projektu musimy utworzyć niezbędne pliki do prawidłowego działania narzędzia:</p>
+    <h4 id="instalacja-srodowiska-wirtualnego">Instalacja środowiska wirtualnego</h4>
+    <pre>
+      <code class="language-bash">python3 -m venv venv
+</code>
+    </pre>
+    <h4 id="utworzenie-pliku-ze-zmiennymi-srodwiskowymi">utworzenie pliku ze zmiennymi środwiskowymi</h4>
+    <pre>
+      <code class="language-bash">nano .env
+</code>
+    </pre>
+    <p>Wpisujemy niezbędne zmienne:</p>
+    <pre>
+      <code class="language-none">X-ClientId = TOKEN_Z_BDL_API
+
+outputFolder = sciezka/do/folderu,2sciezka/do/folderu
+
+## email settings
+EmailAcc = email account
+EmailPass = email pass
+EmailTo = email1@gmail.com,email2@gmail.com
+mailhost = host? np. dla gmail smpt.gmail.com
+port = port? np. dla gmail 587
+</code>
+    </pre>
+    <h4 id="aktywacja-srodowiska-i-instalacja-niezbednych-paczek">Aktywacja środowiska i instalacja niezbędnych paczek</h4>
+    <pre>
+      <code class="language-bash">source venv/bin/activate
+
+pip install -r requirements.txt
+</code>
+    </pre>
+    <h3 id="uruchomienie-narzedzia">uruchomienie narzedzia</h3>
+    <p>Program napisany jest zgodnie ze wzrocem CLI (Command Line Interface).</p>
+    <p>Uwaga! Przed uruchomieniem naleźy znaleźć się w folderze projektu i uruchomić środowisko wirtualne:</p>
+    <ul>
+      <li>
+        <p>Linux:</p>
+        <pre>
+          <code class="language-bash">source venv\bin\activate
+</code>
+        </pre>
+      </li>
+      <li>
+        <p>Windows:</p>
+        <pre>
+          <code class="language-cmd">venv\scripts\activate.bat
+</code>
+        </pre>
+      </li>
+    </ul>
+    <p>W celu wylistowania dostępnych możliwośći użycia programu należy użyć komendy:</p>
+    <pre>
+      <code class="language-bash">python main.py -h
+</code>
+    </pre>
+    <p>Możliwości:</p>
+    <ol>
+      <li>
+        <p>Pobieranie plików zgodnie z konfiguracją w pliku config.json</p>
+        <pre>
+          <code class="language-bash">python main.py --config config.json
+</code>
+        </pre>
+      </li>
+      <li>
+        <p>Pobieranie danych dla zadanego okresu</p>
+        <p>Dla konkretnego roku</p>
+        <pre>
+          <code class="language-bash">python main.py --year XXXX --month XX
+</code>
+        </pre>
+        <p>lub</p>
+        <p>Dla wszystkich miesięcy w zadanym roku</p>
+        <pre>
+          <code class="language-bash">python main.py --year 2022
+</code>
+        </pre>
+        <p>
+          <em>Należy pamięc, aby miesiąc był zawsze 2 znakowy np. 01,05,12</em>
+        </p>
+      </li>
+      <li>
+        <p>Dodawania roku do config.json</p>
+        <p>Program co zapis danych sprawdza wartość all_download w pliku config.json, jeżeli wszystkie lata mają flage true to dodaje kolejny rok z flagami false dla wszystkich miesięcy.</p>
+        <p>W celu wymuszenia dodania kolejnych lat możemy użyć komendy:</p>
+        <pre>
+          <code class="language-bash">python main.py add_year X
+### gdzie X liczba lat które chcemy dodać np. 1. Zostanie dodany kolejny rok po najwyższym istniejącym.
+</code>
+        </pre>
+      </li>
+    </ol>
+  </body>
+</html>

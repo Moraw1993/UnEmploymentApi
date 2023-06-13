@@ -21,7 +21,7 @@ Użytkownik będzie miał wybór sposobu pobierania danych:
 
 3. [Konfiguracja projektu](#konfiguracja-projektu)
 
-4. [Uruchomienie programu](#uruchomienie-narzędzia)
+4. [Uruchomienie programu](#uruchomienie-narzedzia)
 
 ### Instalacja pythona na oracle linux 6
 
@@ -145,7 +145,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ~~~~
 
-### Uruchomienie narzędzia
+### uruchomienie narzedzia
 
 Program napisany jest zgodnie ze wzrocem CLI (Command Line Interface).
 

@@ -1,7 +1,9 @@
 ## output
-Output/*.csv
+output/*.csv
 ## logs
-Logs/*.log
+logs/*.log
+##vscode
+.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

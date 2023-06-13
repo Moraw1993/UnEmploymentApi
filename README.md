@@ -84,8 +84,61 @@ Po urochomieniu powinno przejść do pythona. w celu wyjścia wpisujemy exit()
 
 ### pobieranie projektu
 
-...
+#### **GIT**
+
+~~~~bash
+git clone https://github.com/Moraw1993/UnEmploymentApi.git
+~~~~
+
+#### **SVN**
+
+~~~~bash
+svn checkout https://github.com/Moraw1993/UnEmploymentApi.git
+~~~~
+
+#### **ZIP**
+
+~~~~bash
+wget https://github.com/Moraw1993/UnEmploymentApi/archive/refs/heads/main.zip
+
+tar xvzf main.zip
+~~~~
 
 ### konfiguracja projektu
 
-...
+W głównym folderze projektu musimy utworzyć niezbędne pliki do działania narzędzie:
+
+#### Instalacja środowiska wirtualnego
+
+~~~~bash
+python3 -m venv my_venv
+~~~~
+
+#### utworzenie pliku ze zmiennymi środwiskowymi
+
+~~~~bash
+nano .env
+~~~~
+
+Wpisujemy potrzebne zmienne:
+
+~~~~none
+X-ClientId = TOKEN_Z_BDL_API
+
+outputFolder = sciezka/do/folderu,2sciezka/do/folderu
+
+## email settings
+EmailAcc = email account
+EmailPass = email pass
+EmailTo = email1@gmail.com,email2@gmail.com
+mailhost = host? np. dla gmail smpt.gmail.com
+port = port? np. dla gmail 587
+~~~~
+
+#### Aktuwacja środowiska i instalacja niezbędnych paczek
+
+~~~~bash
+source my_venv/bin/activate
+
+pip install -r requirements.txt
+~~~~

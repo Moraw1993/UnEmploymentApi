@@ -21,7 +21,7 @@ Użytkownik będzie miał wybór sposobu pobierania danych:
 
 3. [Konfiguracja projektu](#konfiguracja-projektu)
 
-### instalacja pythona na oracle linux 6
+### Instalacja pythona na oracle linux 6
 
 W celu zapewnienia prawidłowego działania Pythona należy przejść poniższe korki:
 
@@ -82,7 +82,7 @@ Na samym początku musisz zainstalować niezbędne paczki do prawidłowego dzia�
 
 Po uruchomieniu powinieneś być w interaktywnej konsoli Pythona. Aby wyjść, wpisz **exit()**.
 
-### pobieranie projektu
+### Pobieranie projektu
 
 #### **GIT**
 
@@ -104,7 +104,7 @@ wget https://github.com/Moraw1993/UnEmploymentApi/archive/refs/heads/main.zip
 unzip main.zip
 ~~~~
 
-### konfiguracja projektu
+### Konfiguracja projektu
 
 W głównym folderze projektu musimy utworzyć niezbędne pliki do prawidłowego działania narzędzia:
 
@@ -142,3 +142,41 @@ source my_venv/bin/activate
 
 pip install -r requirements.txt
 ~~~~
+
+### Uruchomienie narzędzia
+
+Program napisany jest zgodnie ze wzrocem CLI (Command Line Interface).
+
+W celu wylistowania dostępnych możliwośći użycia programu należy użyć komendy:
+
+Uwaga! przed użyciem należy aktywować środowisko wirtualne i znaleźć się w folderze projektu
+
+~~~~bash
+python main.py -h
+~~~~
+
+Możliwości:
+
+1. Pobieranie plików zgodnie z konfiguracją w pliku config.json
+
+    ~~~~bash
+    python main.py --config config.json
+    ~~~~
+
+2. Pobieranie danych dla zadanego okresu
+
+    Dla konkretnego roku
+
+    ~~~~bash
+    python main.py --year XXXX --month XX
+    ~~~~
+
+    lub
+
+    Dla wszystkich miesięcy w zadanym roku
+
+    ~~~~bash
+    python main.py --year 2022
+    ~~~~
+
+    *Należy pamięc, aby miesiąc był zawsze 2 znakowy np. 01,05,12*

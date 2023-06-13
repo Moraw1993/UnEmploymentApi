@@ -15,72 +15,72 @@ Użytkownik będzie miał wybór sposobu pobierania danych:
 
 ## Kroki instalacji dla Oracle Linux 6
 
-1. [Instalacja pythona 3.6.8 na Oracle linux 6](#install-python-on-oracle-linux-6)
+1. [Instalacja pythona 3.6.8 na Oracle linux 6](#instalacja-pythona-na-oracle-linux-6)
 
 2. [Pobranie repo projektu](#pobieranie-projektu)
 
 3. [Konfiguracja projektu](#konfiguracja-projektu)
 
-### install python on oracle linux 6
+### instalacja pythona na oracle linux 6
 
 W celu zapewnienia prawidłowego działania Pythona należy przejść poniższe korki:
 
 Na samym początku musisz zainstalować niezbędne paczki do prawidłowego działania Pythona.
 
-~~~~bash
-sudo yum install openssl openssl-devel zlib-devel bzip2 bzip2-devel readline-devel 
-sqlite sqlite-devel tk-devel libffi-devel gdbm-devel
-~~~~
+1. Zainstaluj niezbędne paczki do prawidłowego działania pythona
 
-Utworzyć folder python w ścieżce do której chcemy pobrać plik
+    ~~~~bash
+    sudo yum install openssl openssl-devel zlib-devel bzip2 bzip2-devel readline-devel 
+    sqlite sqlite-devel tk-devel libffi-devel gdbm-devel
+    ~~~~
 
-~~~~bash
-mkdir python
-cd python
-~~~~
+2. Utwórz folder **python**, w której zostanie pobrany plik:
 
-Pobierz Pythona w wersji 3.6.8:
+    ~~~~bash
+    mkdir python
+    cd python
+    ~~~~
 
-~~~~bash
-wget https://www.python.org/ftp/python/3.6.8/Python-3.6.8.tgz
-~~~~
+3. Pobierz Pythona w wersji 3.6.8:
 
-Następnie rozpakuj go:
+    ~~~~bash
+    wget https://www.python.org/ftp/python/3.6.8/Python-3.6.8.tgz
+    ~~~~
 
-~~~~bash
-tar xvzf Python-3.6.8.tgz
-~~~~
+4. Rozpakuj pobrany plik:
 
-Po rozpakowaniu przejdź do folderu i uruchom proces konfiguracji środowiska.
+    ~~~~bash
+    tar xvzf Python-3.6.8.tgz
+    ~~~~
 
-Poprzez --prefix zmieniamy domyślny folder instalacji
+5. Przejdź do folderu Python-3.6.8 i uruchom proces konfiguracji środowiska. Użyj parametru --prefix, aby zmienić folder instalacji:
 
-~~~~bash
-cd Python-3.6.8
-./configure --prefix=/opt/python3.6
-~~~~
+    ~~~~bash
+    cd Python-3.6.8
+    ./configure --prefix=/opt/python3.6
+    ~~~~
 
-Kompilacja i instlacja
+6. Kompiluj i instaluj:
 
-~~~~bash
-make && sudo make install
-~~~~
+    ~~~~bash
+    make && sudo make install
+    ~~~~
 
-Po instalacji należy wykonać polecenia tworzące symbolic links
+7. Po instalacji wykonaj polecenia tworzące symboliczne linki:
 
-~~~~bash
-sudo ln -s /opt/python3.6/bin/python3.6 /usr/bin/python36
-sudo ln -s /opt/python3.6/bin/idle3.6 /usr/bin/idle-python36
-sudo ln -s /opt/python3.6/bin/pip3 /usr/bin/pip
-~~~~
+    ~~~~bash
+    sudo ln -s /opt/python3.6/bin/python3.6 /usr/bin/python36
+    sudo ln -s /opt/python3.6/bin/idle3.6 /usr/bin/idle-python36
+    sudo ln -s /opt/python3.6/bin/pip3 /usr/bin/pip
+    ~~~~
 
-Przetestuj czy działa:
+8. Przetestuj czy Python działa poprawnie:
 
-~~~~bash
-python36
-~~~~
+    ~~~~bash
+    python36
+    ~~~~
 
-Po urochomieniu powinno przejść do pythona. w celu wyjścia wpisujemy exit()
+Po uruchomieniu powinieneś być w interaktywnej konsoli Pythona. Aby wyjść, wpisz **exit()**.
 
 ### pobieranie projektu
 
@@ -101,12 +101,12 @@ svn checkout https://github.com/Moraw1993/UnEmploymentApi.git
 ~~~~bash
 wget https://github.com/Moraw1993/UnEmploymentApi/archive/refs/heads/main.zip
 
-tar xvzf main.zip
+unzip main.zip
 ~~~~
 
 ### konfiguracja projektu
 
-W głównym folderze projektu musimy utworzyć niezbędne pliki do działania narzędzie:
+W głównym folderze projektu musimy utworzyć niezbędne pliki do prawidłowego działania narzędzia:
 
 #### Instalacja środowiska wirtualnego
 
@@ -120,7 +120,7 @@ python3 -m venv my_venv
 nano .env
 ~~~~
 
-Wpisujemy potrzebne zmienne:
+Wpisujemy niezbędne zmienne:
 
 ~~~~none
 X-ClientId = TOKEN_Z_BDL_API
@@ -135,7 +135,7 @@ mailhost = host? np. dla gmail smpt.gmail.com
 port = port? np. dla gmail 587
 ~~~~
 
-#### Aktuwacja środowiska i instalacja niezbędnych paczek
+#### Aktywacja środowiska i instalacja niezbędnych paczek
 
 ~~~~bash
 source my_venv/bin/activate

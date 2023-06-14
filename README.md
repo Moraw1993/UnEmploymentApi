@@ -1,12 +1,12 @@
 # UnEmploymentApi
 
-Ten projekt przedstawia proces ETL pipeline (Extract, Transform, Load) w języku Python, który pobiera dane z REST-API BDL (Bank danych lokalnych), przetwarza je i zapisuje do plików w formacie .csv
+Ten projekt przedstawia proces ETL pipeline (Extract, Transform, Load) w języku Python, który pobiera dane z REST-API BDL (Bank danych lokalnych), przetwarza je i zapisuje do plików w formacie .csv i kodowaniu UTF-8
 
 ## Opis projektu
 
 W związku z potrzebą uruchomienia programu na Oracle linux 6, została użyta werjsa Python 3.6.8
 
-Projekt ma na celu zautomatyzowanie pobierania danych z REST-API BDL, które zawierają informacje statystyczne na temat stopy bezrobocia w powiatach, województach i Polsce. Naspnie dane są przetwarzane, tak aby uzyskać potrzebne informacje w odpowiednim formacie, a finalnie zapisywane do plików CSV.
+Projekt ma na celu zautomatyzowanie pobierania danych z REST-API BDL, które zawierają informacje statystyczne na temat stopy bezrobocia w powiatach, województwach i Polsce. Naspnie dane są przetwarzane, tak aby uzyskać potrzebne informacje w odpowiednim formacie, a finalnie zapisywane do plików CSV.
 
 Użytkownik będzie miał wybór sposobu pobierania danych:
 
@@ -26,8 +26,6 @@ Użytkownik będzie miał wybór sposobu pobierania danych:
 ### Instalacja pythona na oracle linux 6
 
 W celu zapewnienia prawidłowego działania Pythona należy przejść poniższe korki:
-
-Na samym początku musisz zainstalować niezbędne paczki do prawidłowego działania Pythona.
 
 1. Zainstaluj niezbędne paczki do prawidłowego działania pythona
 
@@ -161,6 +159,10 @@ Uwaga! Przed uruchomieniem należy znaleźć się w folderze projektu i uruchomi
 
     ~~~~cmd
     venv\scripts\activate.bat
+
+    lub 
+
+    venv\scripts\activate
     ~~~~
 
 W celu wylistowania dostępnych możliwośći użycia programu należy użyć komendy:
@@ -193,7 +195,7 @@ Możliwości:
     python main.py --year 2022
     ~~~~
 
-    *Należy pamięc, aby miesiąc był zawsze 2 znakowy np. 01,05,12*
+    *Należy pamiętać, aby miesiąc był zawsze 2 znakowy np. 01,05,12*
 
 3. Dodawania roku do config.json
 
@@ -203,5 +205,5 @@ Możliwości:
 
     ~~~~bash
     python main.py add_year X
-    ### gdzie X liczba lat które chcemy dodać np. 1. Zostanie dodany kolejny rok po najwyższym istniejącym.
+    ### gdzie X - liczba lat które chcemy dodać np. 1. Zostanie dodany kolejny rok po najwyższym istniejącym.
     ~~~~

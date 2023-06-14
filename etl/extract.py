@@ -44,7 +44,7 @@ class Extractor:
         }
         self.logger = logging.getLogger("__main__")
         self.request_handler = RequestHandler()
-        self.header_builder = HeaderBuilder(os.getenv("X-ClientId"))
+        self.header_builder = HeaderBuilder(os.getenv("X-ClientId", None))
 
     def get_variable_id(self, month):
         """
@@ -184,4 +184,11 @@ class HeaderBuilder:
         self.token = token
 
     def build_header(self):
-        return {"Host": "bdl.stat.gov.pl", "X-ClientId": self.token}
+        header = {
+            "Host": "bdl.stat.gov.pl",
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64)",
+        }
+        if self.token:
+            header["X-ClientId"] = self.token
+
+        return header

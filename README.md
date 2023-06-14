@@ -113,7 +113,7 @@ W głównym folderze projektu musimy utworzyć niezbędne pliki do prawidłowego
 #### Instalacja środowiska wirtualnego
 
 ~~~~bash
-python3 -m venv venv
+python36 -m venv venv
 ~~~~
 
 #### utworzenie pliku ze zmiennymi środwiskowymi
@@ -147,9 +147,9 @@ pip install -r requirements.txt
 
 ### uruchomienie narzedzia
 
-Program napisany jest zgodnie ze wzrocem CLI (Command Line Interface).
+Program napisany jest zgodnie ze wzorcem CLI (Command Line Interface).
 
-Uwaga! Przed uruchomieniem naleźy znaleźć się w folderze projektu i uruchomić środowisko wirtualne:
+Uwaga! Przed uruchomieniem należy znaleźć się w folderze projektu i uruchomić środowisko wirtualne:
 
 - Linux:
 

@@ -34,7 +34,7 @@ W celu zapewnienia prawidłowego działania Pythona należy przejść poniższe 
     sqlite sqlite-devel tk-devel libffi-devel gdbm-devel
     ~~~~
 
-2. Utwórz folder **python**, w której zostanie pobrany plik:
+2. Utwórz folder **python**, do którego zostanie pobrany plik:
 
     ~~~~bash
     mkdir python

@@ -6,12 +6,21 @@ Ten projekt przedstawia proces ETL pipeline (Extract, Transform, Load) w języku
 
 W związku z potrzebą uruchomienia programu na Oracle linux 6, została użyta werjsa Python 3.6.8
 
-Projekt ma na celu zautomatyzowanie pobierania danych z REST-API BDL, które zawierają informacje statystyczne na temat stopy bezrobocia w powiatach, województwach i Polsce. Naspnie dane są przetwarzane, tak aby uzyskać potrzebne informacje w odpowiednim formacie, a finalnie zapisywane do plików CSV.
+Projekt ma na celu zautomatyzowanie pobierania danych z REST-API BDL, które zawierają informacje statystyczne na temat stopy bezrobocia w powiatach, województwach i Polsce. Następnie dane są przetwarzane, tak aby uzyskać potrzebne informacje w odpowiednim formacie, a finalnie zapisywane do plików CSV.
 
 Użytkownik będzie miał wybór sposobu pobierania danych:
 
 - Pobieranie danych dla kolejnych miesięcy zgodnych z plikiem konfiguracyjnym.
 - Wybór roku lub/i miesiąca, dla którego mają być pobrane dane.
+
+## Limity zapytan dla uzytkownikow
+
+| Okres | Użytkownik niezalogowany | Użytkownik zalogowany
+| :--- | :---:| :---:|
+|1s|5|10
+|15m|100|500
+|12h|1 000| 5 000
+|7d|10 000|50 000
 
 ## Kroki instalacji dla Oracle Linux 6
 
@@ -106,7 +115,7 @@ unzip main.zip
 
 ### Konfiguracja projektu
 
-W głównym folderze projektu musimy utworzyć niezbędne pliki do prawidłowego działania narzędzia:
+W głównym folderze projektu należy utworzyć niezbędne pliki do prawidłowego działania narzędzia:
 
 #### Instalacja środowiska wirtualnego
 
@@ -114,7 +123,7 @@ W głównym folderze projektu musimy utworzyć niezbędne pliki do prawidłowego
 python36 -m venv venv
 ~~~~
 
-#### utworzenie pliku ze zmiennymi środwiskowymi
+#### utworzenie pliku zawierającego zmienne środowiskowe
 
 ~~~~bash
 nano .env
@@ -135,6 +144,18 @@ mailhost = host? np. dla gmail smpt.gmail.com
 port = port? np. dla gmail 587
 ~~~~
 
+gdzie:
+
+*X-ClientId* -> Token dostępu do API. Token można uzyskać poprzez rejestracje na stronie <https://api.stat.gov.pl/Home/BdlApi>, dzięki czemu zostanie zwiększony limit zapytań na tydzień do 50 tysięcy. Niezarejestrowany użytkownik ma ograniczenie do 10 tyś. zapytań na tydzień. Dokładne limity podane są w [tabeli limitów](#limity-zapytan-dla-uzytkownikow).
+
+*outputFolder* -> ścieżki wyściowe pliku .csv. kolejne ścieżki należy zapisać po przecinku.
+
+#### Dodanie uprawnień dla właściciela pliku
+
+~~~~bash
+chmod -R u+rwx nazwa_folderu
+~~~~
+
 #### Aktywacja środowiska i instalacja niezbędnych paczek
 
 ~~~~bash
@@ -147,7 +168,7 @@ pip install -r requirements.txt
 
 Program napisany jest zgodnie ze wzorcem CLI (Command Line Interface).
 
-Uwaga! Przed uruchomieniem należy znaleźć się w folderze projektu i uruchomić środowisko wirtualne:
+Uwaga! Przed uruchomieniem należy znajdować się w folderze projektu w celu uruchomienia środowiska wirtualnego:
 
 - Linux:
 

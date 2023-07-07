@@ -146,9 +146,11 @@ port = port? np. dla gmail 587
 
 gdzie:
 
-*X-ClientId* -> Token dostępu do API. Token można uzyskać poprzez rejestracje na stronie <https://api.stat.gov.pl/Home/BdlApi>, dzięki czemu zostanie zwiększony limit zapytań na tydzień do 50 tysięcy. Niezarejestrowany użytkownik ma ograniczenie do 10 tyś. zapytań na tydzień. Dokładne limity podane są w [tabeli limitów](#limity-zapytan-dla-uzytkownikow).
+>*X-ClientId* -> Token dostępu do API. Token można uzyskać poprzez rejestracje na stronie <https://api.stat.gov.pl/Home/BdlApi>, dzięki czemu zostanie zwiększony limit zapytań na tydzień do 50 tysięcy. Niezarejestrowany użytkownik ma ograniczenie do 10 tyś. zapytań na tydzień. Dokładne limity podane są w [tabeli limitów](#limity-zapytan-dla-uzytkownikow).
+>
+>*outputFolder* -> ścieżki wyściowe pliku .csv. kolejne ścieżki należy zapisać po przecinku.
 
-*outputFolder* -> ścieżki wyściowe pliku .csv. kolejne ścieżki należy zapisać po przecinku.
+***
 
 #### Dodanie uprawnień dla właściciela pliku
 
@@ -168,7 +170,7 @@ pip install -r requirements.txt
 
 Program napisany jest zgodnie ze wzorcem CLI (Command Line Interface).
 
-Uwaga! Przed uruchomieniem należy znajdować się w folderze projektu w celu uruchomienia środowiska wirtualnego:
+**Uwaga! Przed uruchomieniem należy znajdować się w folderze projektu w celu uruchomienia środowiska wirtualnego:**
 
 - Linux:
 
@@ -226,5 +228,6 @@ Możliwości:
 
     ~~~~bash
     python main.py add_year X
-    ### gdzie X - liczba lat które chcemy dodać np. 1. Zostanie dodany kolejny rok po najwyższym istniejącym.
     ~~~~
+
+    >gdzie X - liczba lat które chcemy dodać np. 1. Zostanie dodany kolejny rok po najwyższym istniejącym.

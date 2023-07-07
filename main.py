@@ -4,6 +4,7 @@ from logger import get_logger
 from utilities import ConfigManager, delete_logs
 from dotenv import load_dotenv
 from downloader import UnemploymentDownloader
+import sys
 
 
 ### Validate functions for type argument
@@ -121,6 +122,7 @@ def main():
         logger.exception(
             "an error occurred that was not handled while the application was running",
         )
+        sys.exit(1)
 
 
 if __name__ == "__main__":

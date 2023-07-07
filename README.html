@@ -15,15 +15,47 @@ td, h1, h2, h3, h4, h5, p, ul, ol, li {
   </head>
   <body>
     <h1 id="unemploymentapi">UnEmploymentApi</h1>
-    <p>Ten projekt przedstawia proces ETL pipeline (Extract, Transform, Load) w języku Python, który pobiera dane z REST-API BDL (Bank danych lokalnych), przetwarza je i zapisuje do plików w formacie .csv</p>
+    <p>Ten projekt przedstawia proces ETL pipeline (Extract, Transform, Load) w języku Python, który pobiera dane z REST-API BDL (Bank danych lokalnych), przetwarza je i zapisuje do plików w formacie .csv i kodowaniu UTF-8</p>
     <h2 id="opis-projektu">Opis projektu</h2>
     <p>W związku z potrzebą uruchomienia programu na Oracle linux 6, została użyta werjsa Python 3.6.8</p>
-    <p>Projekt ma na celu zautomatyzowanie pobierania danych z REST-API BDL, które zawierają informacje statystyczne na temat stopy bezrobocia w powiatach, województach i Polsce. Naspnie dane są przetwarzane, tak aby uzyskać potrzebne informacje w odpowiednim formacie, a finalnie zapisywane do plików CSV.</p>
+    <p>Projekt ma na celu zautomatyzowanie pobierania danych z REST-API BDL, które zawierają informacje statystyczne na temat stopy bezrobocia w powiatach, województwach i Polsce. Następnie dane są przetwarzane, tak aby uzyskać potrzebne informacje w odpowiednim formacie, a finalnie zapisywane do plików CSV.</p>
     <p>Użytkownik będzie miał wybór sposobu pobierania danych:</p>
     <ul>
       <li>Pobieranie danych dla kolejnych miesięcy zgodnych z plikiem konfiguracyjnym.</li>
       <li>Wybór roku lub/i miesiąca, dla którego mają być pobrane dane.</li>
     </ul>
+    <h2 id="limity-zapytan-dla-uzytkownikow">Limity zapytan dla uzytkownikow</h2>
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align: left;">Okres</th>
+          <th style="text-align: center;">Użytkownik niezalogowany</th>
+          <th style="text-align: center;">Użytkownik zalogowany</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="text-align: left;">1s</td>
+          <td style="text-align: center;">5</td>
+          <td style="text-align: center;">10</td>
+        </tr>
+        <tr>
+          <td style="text-align: left;">15m</td>
+          <td style="text-align: center;">100</td>
+          <td style="text-align: center;">500</td>
+        </tr>
+        <tr>
+          <td style="text-align: left;">12h</td>
+          <td style="text-align: center;">1 000</td>
+          <td style="text-align: center;">5 000</td>
+        </tr>
+        <tr>
+          <td style="text-align: left;">7d</td>
+          <td style="text-align: center;">10 000</td>
+          <td style="text-align: center;">50 000</td>
+        </tr>
+      </tbody>
+    </table>
     <h2 id="kroki-instalacji-dla-oracle-linux-6">Kroki instalacji dla Oracle Linux 6</h2>
     <ol>
       <li>
@@ -49,7 +81,6 @@ td, h1, h2, h3, h4, h5, p, ul, ol, li {
     </ol>
     <h3 id="instalacja-pythona-na-oracle-linux-6">Instalacja pythona na oracle linux 6</h3>
     <p>W celu zapewnienia prawidłowego działania Pythona należy przejść poniższe korki:</p>
-    <p>Na samym początku musisz zainstalować niezbędne paczki do prawidłowego działania Pythona.</p>
     <ol>
       <li>
         <p>Zainstaluj niezbędne paczki do prawidłowego działania pythona</p>
@@ -60,7 +91,7 @@ sqlite sqlite-devel tk-devel libffi-devel gdbm-devel
         </pre>
       </li>
       <li>
-        <p>Utwórz folder <strong>python</strong>, w której zostanie pobrany plik:</p>
+        <p>Utwórz folder <strong>python</strong>, do którego zostanie pobrany plik:</p>
         <pre>
           <code class="language-bash">mkdir python
 cd python
@@ -139,13 +170,13 @@ unzip main.zip
 </code>
     </pre>
     <h3 id="konfiguracja-projektu">Konfiguracja projektu</h3>
-    <p>W głównym folderze projektu musimy utworzyć niezbędne pliki do prawidłowego działania narzędzia:</p>
+    <p>W głównym folderze projektu należy utworzyć niezbędne pliki do prawidłowego działania narzędzia:</p>
     <h4 id="instalacja-srodowiska-wirtualnego">Instalacja środowiska wirtualnego</h4>
     <pre>
-      <code class="language-bash">python3 -m venv venv
+      <code class="language-bash">python36 -m venv venv
 </code>
     </pre>
-    <h4 id="utworzenie-pliku-ze-zmiennymi-srodwiskowymi">utworzenie pliku ze zmiennymi środwiskowymi</h4>
+    <h4 id="utworzenie-pliku-zawierajacego-zmienne-srodowiskowe">utworzenie pliku zawierającego zmienne środowiskowe</h4>
     <pre>
       <code class="language-bash">nano .env
 </code>
@@ -164,6 +195,16 @@ mailhost = host? np. dla gmail smpt.gmail.com
 port = port? np. dla gmail 587
 </code>
     </pre>
+    <p>gdzie:</p>
+    <p>
+      <em>X-ClientId</em> -&gt; Token dostępu do API. Token można uzyskać poprzez rejestracje na stronie <a href="https://api.stat.gov.pl/Home/BdlApi">https://api.stat.gov.pl/Home/BdlApi</a>, dzięki czemu zostanie zwiększony limit zapytań na tydzień do 50 tysięcy. Niezarejestrowany użytkownik ma ograniczenie do 10 tyś. zapytań na tydzień. Dokładne limity podane są w <a href="#limity-zapytan-dla-uzytkownikow">tabeli limitów</a>.</p>
+    <p>
+      <em>outputFolder</em> -&gt; ścieżki wyściowe pliku .csv. kolejne ścieżki należy zapisać po przecinku.</p>
+    <h4 id="dodanie-uprawnien-dla-wasciciela-pliku">Dodanie uprawnień dla właściciela pliku</h4>
+    <pre>
+      <code class="language-bash">chmod -R u+rwx nazwa_folderu
+</code>
+    </pre>
     <h4 id="aktywacja-srodowiska-i-instalacja-niezbednych-paczek">Aktywacja środowiska i instalacja niezbędnych paczek</h4>
     <pre>
       <code class="language-bash">source venv/bin/activate
@@ -172,8 +213,8 @@ pip install -r requirements.txt
 </code>
     </pre>
     <h3 id="uruchomienie-narzedzia">uruchomienie narzedzia</h3>
-    <p>Program napisany jest zgodnie ze wzrocem CLI (Command Line Interface).</p>
-    <p>Uwaga! Przed uruchomieniem naleźy znaleźć się w folderze projektu i uruchomić środowisko wirtualne:</p>
+    <p>Program napisany jest zgodnie ze wzorcem CLI (Command Line Interface).</p>
+    <p>Uwaga! Przed uruchomieniem należy znajdować się w folderze projektu w celu uruchomienia środowiska wirtualnego:</p>
     <ul>
       <li>
         <p>Linux:</p>
@@ -186,6 +227,10 @@ pip install -r requirements.txt
         <p>Windows:</p>
         <pre>
           <code class="language-cmd">venv\scripts\activate.bat
+
+lub 
+
+venv\scripts\activate
 </code>
         </pre>
       </li>
@@ -218,7 +263,7 @@ pip install -r requirements.txt
 </code>
         </pre>
         <p>
-          <em>Należy pamięc, aby miesiąc był zawsze 2 znakowy np. 01,05,12</em>
+          <em>Należy pamiętać, aby miesiąc był zawsze 2 znakowy np. 01,05,12</em>
         </p>
       </li>
       <li>
@@ -227,7 +272,7 @@ pip install -r requirements.txt
         <p>W celu wymuszenia dodania kolejnych lat możemy użyć komendy:</p>
         <pre>
           <code class="language-bash">python main.py add_year X
-### gdzie X liczba lat które chcemy dodać np. 1. Zostanie dodany kolejny rok po najwyższym istniejącym.
+### gdzie X - liczba lat które chcemy dodać np. 1. Zostanie dodany kolejny rok po najwyższym istniejącym.
 </code>
         </pre>
       </li>

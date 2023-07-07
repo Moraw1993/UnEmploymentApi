@@ -1,0 +1,2 @@
+cd call c:\AREK_SVN\trunk\Arek_pliki\Python\UnEmploymentApi
+call c:\AREK_SVN\trunk\Arek_pliki\Python\UnEmploymentApi\venv310\Scripts\activate && python c:\AREK_SVN\trunk\Arek_pliki\Python\UnEmploymentApi\main.py --config config.json
